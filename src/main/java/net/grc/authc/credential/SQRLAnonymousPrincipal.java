@@ -2,6 +2,7 @@ package net.grc.authc.credential;
 
 import org.apache.commons.codec.binary.Base64;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -21,25 +22,25 @@ public class SQRLAnonymousPrincipal {
     public SQRLAnonymousPrincipal(URI challenge, String key, int d, String sqrlver) {
         if(challenge == null) throw new IllegalArgumentException("challenge=null");
         if(key == null) throw new IllegalArgumentException("key==null");
-        if(d < 1) throw new IllegalArgumentException("d="+d);
+        if(d < 0) throw new IllegalArgumentException("d="+d);
         if(sqrlver == null) throw new IllegalArgumentException("sqrlver=null");
         if(!sqrlver.equals(SQRL_VERSION)) throw new IllegalArgumentException("sqrlver="+sqrlver);
 
         Base64 b64 = new Base64(true);
         this.sqrlkey = ByteBuffer.wrap(b64.decode(key));
 
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        baos.write();
         StringBuilder sb = new StringBuilder();
         sb.append(challenge.getScheme());
+        sb.append("://");
         sb.append(challenge.getHost());
-        if(d >= 1) {
-            sb.append('/');
-            if(d > 1) {
-                String path = challenge.getPath();
-                if(d-1 > path.length()) {
-                    throw new IllegalArgumentException("d="+d+" > path.length()="+(path.length()+1));
-                }
-                sb.append(path.substring(0,d-1));
+        if(d > 0) {
+            String path = challenge.getPath();
+            if(d > path.length()) {
+                throw new IllegalArgumentException("d="+d+" > path.length()="+(path.length()));
             }
+            sb.append(path.substring(0,d));
         }
         sqrlRealm = sb.toString();
     }
