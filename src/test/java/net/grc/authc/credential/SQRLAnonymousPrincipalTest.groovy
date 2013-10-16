@@ -25,7 +25,7 @@ public class SQRLAnonymousPrincipalTest extends Specification {
         pr.realm == realm
 
         where:
-        realm                             || challenge
+        challenge                         || realm
         'sqrl://grc.com'                  || 'sqrl://grc.com/'
         'qrl://grc.com'                   || 'qrl://grc.com/'
         'qrl://grc.com'                   || 'qrl://grc.com'
@@ -86,9 +86,9 @@ public class SQRLAnonymousPrincipalTest extends Specification {
         pr.realm == realm
 
         where:
-        realm                             || d | challenge
-        'qrl://grc.com/'                  || 1 | 'qrl://grc.com/'
-        'qrl://grc.com/login'             || 6 | 'qrl://grc.com/login'
+        challenge                   | d || realm
+        'qrl://grc.com/'            | 1 || 'qrl://grc.com/'
+        'qrl://grc.com/login'       | 6 || 'qrl://grc.com/login'
     }
 
     @Unroll
@@ -100,12 +100,12 @@ public class SQRLAnonymousPrincipalTest extends Specification {
         thrown(IllegalArgumentException)
 
         where:
-        uri   | key   | d  | ver   | desc
-        null  | okkey | 0  | okver | 'no uri'
-        okuri | null  | 0  | okver | 'no key'
-        okuri | okkey | -1 | okver | 'd < 0'
-        okuri | okkey | 0  | null  | 'no ver'
-        okuri | okkey | 1  | okver | 'd > path length'
+        uri   | key   | d  | ver   || desc
+        null  | okkey | 0  | okver || 'no uri'
+        okuri | null  | 0  | okver || 'no key'
+        okuri | okkey | -1 | okver || 'd < 0'
+        okuri | okkey | 0  | null  || 'no ver'
+        okuri | okkey | 1  | okver || 'd > path length'
 
     }
 
