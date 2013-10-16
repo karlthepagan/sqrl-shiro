@@ -33,6 +33,47 @@ public class SQRLAnonymousPrincipalTest extends Specification {
     }
 
     @Unroll
+    def 'RFC 3986 url normalized d=#d #challenge'() {
+        def ver = okver
+        def key = okkey
+
+        when:
+        def uri = new URI(challenge)
+        def pr = new SQRLAnonymousPrincipal(uri,key,d,ver)
+
+        then:
+        pr.realm == realm
+
+        where:
+        challenge                   | d || realm
+        'qrl://grc.com:8080'        | 0 || 'qrl://grc.com:8080'
+        'qrl://grc.com/a%C2%B1b'    | 9 || 'qrl://grc.com/a%C2%B1b'
+        'qrl://grc.com/~sg'         | 4 || 'qrl://grc.com/~sg'
+    }
+
+    @Unroll
+    def 'RFC 3986 url exception d=#d #challenge'() {
+        def ver = okver
+        def key = okkey
+
+        when:
+        def uri = new URI(challenge)
+        def pr = new SQRLAnonymousPrincipal(uri,key,d,ver)
+
+        then:
+        thrown(IllegalArgumentException)
+
+        where:
+        challenge                   | d || realm
+        'qrl://grc.com/a%c2%b1b'    | 9 || 'qrl://grc.com/a%C2%B1b'
+        'qrl://grc.com/%7Esg'       | 4 || 'qrl://grc.com/~sg'
+        'qrl://grc.com/%44'         | 2 || 'qrl://grc.com/d'
+        'qrl://GRC.com'             | 0 || 'qrl://grc.com'
+        'qrl://grc.com:80'          | 0 || 'qrl://grc.com'
+        'sqrl://grc.com:443'        | 0 || 'sqrl://grc.com'
+    }
+
+    @Unroll
     def 'test parse d=#d for #challenge'() {
         def ver = okver
         def key = okkey
