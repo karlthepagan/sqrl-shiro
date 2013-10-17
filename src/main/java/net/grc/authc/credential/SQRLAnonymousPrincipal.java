@@ -45,27 +45,18 @@ public class SQRLAnonymousPrincipal {
 
         uri = uri.normalize();
         String asciiString = uri.toASCIIString();
+        if(uri.getHost() == null) {
+            throw new IllegalArgumentException(asciiString + " does not appear to have a hostname");
+        }
         Matcher m = URL_HOST_UPPER.matcher(uri.getHost());
         if(m.find()) {
             throw new IllegalArgumentException(asciiString + " hostname contains uppercase");
         }
         String asciiPath = uri.getRawPath();
-        int domainEnd;
-        if(asciiPath.length() == 0) {
-            domainEnd = asciiString.length();
-        } else {
-            domainEnd = asciiString.indexOf(uri.getHost());
-            domainEnd = asciiString.indexOf(asciiPath,domainEnd);
+        if(d > asciiPath.length()) {
+            throw new IllegalArgumentException(asciiString + " path is shorter than d (" + d + ")");
         }
-        if(domainEnd + d > asciiString.length()) {
-            throw new IllegalArgumentException(asciiString + " is shorter than d (" + d + ")");
-        }
-        asciiString = asciiString.substring(0,domainEnd + d);
-        String schemeHost = asciiString.substring(0,domainEnd);
-        if(URL_DEFAULTPORT_QRL.matcher(schemeHost).find()
-                || URL_DEFAULTPORT_SQRL.matcher(schemeHost).find()) {
-            throw new IllegalArgumentException(asciiString + " explicitly lists default port");
-        }
+        String schemeHost = uri.getScheme() + "://" + uri.getHost();
 
         m = URL_LOWERCASE_ESCAPES.matcher(asciiPath);
         if(m.find()) {
@@ -80,7 +71,7 @@ public class SQRLAnonymousPrincipal {
             }
 
         }
-        return asciiString;
+        return schemeHost + asciiPath.substring(0,d);
     }
 
     /**

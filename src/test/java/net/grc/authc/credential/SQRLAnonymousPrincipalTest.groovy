@@ -26,10 +26,14 @@ public class SQRLAnonymousPrincipalTest extends Specification {
 
         where:
         challenge                         || realm
-        'sqrl://grc.com'                  || 'sqrl://grc.com/'
-        'qrl://grc.com'                   || 'qrl://grc.com/'
+        'sqrl://grc.com/'                 || 'sqrl://grc.com'
+        'qrl://grc.com/'                  || 'qrl://grc.com'
         'qrl://grc.com'                   || 'qrl://grc.com'
-        'qrl://www.xn--frgbolaget-q5a.nu' || 'qrl://www.xn--frgbolaget-q5a.nu/'
+        'qrl://www.xn--frgbolaget-q5a.nu' || 'qrl://www.xn--frgbolaget-q5a.nu'
+        'qrl://grc.com:80'                || 'qrl://grc.com'
+        'sqrl://grc.com:443'              || 'sqrl://grc.com'
+        'qrl://grc.com:8080'              || 'qrl://grc.com'
+        'qrl://sg:secret@grc.com'         || 'qrl://grc.com'
     }
 
     @Unroll
@@ -46,7 +50,6 @@ public class SQRLAnonymousPrincipalTest extends Specification {
 
         where:
         challenge                   | d || realm
-        'qrl://grc.com:8080'        | 0 || 'qrl://grc.com:8080'
         'qrl://grc.com/a%C2%B1b'    | 9 || 'qrl://grc.com/a%C2%B1b'
         'qrl://grc.com/~sg'         | 4 || 'qrl://grc.com/~sg'
     }
@@ -69,8 +72,7 @@ public class SQRLAnonymousPrincipalTest extends Specification {
         'qrl://grc.com/%7Esg'       | 4 || 'qrl://grc.com/~sg'
         'qrl://grc.com/%44'         | 2 || 'qrl://grc.com/d'
         'qrl://GRC.com'             | 0 || 'qrl://grc.com'
-        'qrl://grc.com:80'          | 0 || 'qrl://grc.com'
-        'sqrl://grc.com:443'        | 0 || 'sqrl://grc.com'
+        'qrl://mañana.com'          | 0 || 'qrl://xn--maana-pta.com'
     }
 
     @Unroll

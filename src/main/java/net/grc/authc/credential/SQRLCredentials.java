@@ -26,7 +26,8 @@ public class SQRLCredentials {
 
         Base64 b64 = new Base64(true);
         this.sqrlsig = ByteBuffer.wrap(b64.decode(signature));
-        this.sqrlChallenge = challenge.toString(); // TODO toASCIIString?
+        // TODO challenge validation?
+        this.sqrlChallenge = challenge.toASCIIString();
     }
 
     /**
