@@ -16,18 +16,21 @@ public class SQRLCredentials {
     private static final String SQRL_VERSION = "0";
 
     final String sqrlChallenge;
+    final ByteBuffer sqrlNut;
     final ByteBuffer sqrlsig;
 
     public SQRLCredentials(URI challenge, String signature, String sqrlver) {
-        if(challenge == null) throw new IllegalArgumentException("challenge=null");
-        if(signature == null) throw new IllegalArgumentException("signature=null");
-        if(sqrlver == null) throw new IllegalArgumentException("sqrlver=null");
-        if(!sqrlver.equals(SQRL_VERSION)) throw new IllegalArgumentException("sqrlver="+sqrlver);
+        if (challenge == null) throw new IllegalArgumentException("challenge=null");
+        if (signature == null) throw new IllegalArgumentException("signature=null");
+        if (sqrlver == null) throw new IllegalArgumentException("sqrlver=null");
+        if (!sqrlver.equals(SQRL_VERSION)) throw new IllegalArgumentException("sqrlver=" + sqrlver);
 
         Base64 b64 = new Base64(true);
         this.sqrlsig = ByteBuffer.wrap(b64.decode(signature));
         // TODO challenge validation?
         this.sqrlChallenge = challenge.toASCIIString();
+        // TODO store nut!
+        this.sqrlNut = null;
     }
 
     /**
@@ -45,6 +48,13 @@ public class SQRLCredentials {
     }
 
     /**
+     * The "nut" portion of the SQRL challenge string
+     */
+    public ByteBuffer getNut() {
+        return sqrlNut;
+    }
+
+    /**
      * An Ed25519 signature for this challenge
      */
     public ByteBuffer getSignature() {
@@ -53,13 +63,13 @@ public class SQRLCredentials {
 
     @Override
     public boolean equals(Object o) {
-        if(o == null || !(o instanceof SQRLCredentials)) {
+        if (o == null || !(o instanceof SQRLCredentials)) {
             return false;
         }
 
-        SQRLCredentials other = (SQRLCredentials)o;
+        SQRLCredentials other = (SQRLCredentials) o;
         return sqrlChallenge.equals(other.sqrlChallenge)
-                && Arrays.equals(sqrlsig.array(),other.sqrlsig.array());
+                && Arrays.equals(sqrlsig.array(), other.sqrlsig.array());
 
         // TODO wrapped buffer equals may be inconsistent
     }

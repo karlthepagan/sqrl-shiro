@@ -6,7 +6,6 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 
 import java.nio.charset.Charset;
-import java.util.Collection;
 
 /**
  * Verifies that the credentials supplied in the token match the token's principals.
@@ -21,25 +20,18 @@ public class SQRLCredentialsMatcher implements CredentialsMatcher {
 
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-        if(!(token instanceof SQRLToken)) {
+        if (!(token instanceof SQRLToken)) {
             return false;
         }
 
-        SQRLToken sqrlToken = (SQRLToken) token;
-
-        if(info != null) {
-            Collection<SQRLAnonymousPrincipal> sqrlIds = info.getPrincipals().byType(SQRLAnonymousPrincipal.class);
-            if(!sqrlIds.contains(sqrlToken.getPrincipal())) {
-                // TODO warn authentication principal mismatch? merge principal into info?
-            }
-        }
-
-        SQRLAnonymousPrincipal sqrlId = (SQRLAnonymousPrincipal)sqrlToken.getPrincipal();
-        SQRLCredentials sqrlCredentials = (SQRLCredentials)sqrlToken.getCredentials();
+        SQRLAnonymousPrincipal sqrlId = (SQRLAnonymousPrincipal) token.getPrincipal();
+        SQRLCredentials sqrlCredentials = (SQRLCredentials) token.getCredentials();
 
         // TODO draft standard is very strict about not accepting future versions
-        if(!SQRL_VERSION.equals(sqrlId.getVersion())) throw new IllegalArgumentException("sqrlId.version="+sqrlId.getVersion());
-        if(!SQRL_VERSION.equals(sqrlCredentials.getVersion())) throw new IllegalArgumentException("sqrlCredentials.version="+sqrlCredentials.getVersion());
+        if (!SQRL_VERSION.equals(sqrlId.getVersion()))
+            throw new IllegalArgumentException("sqrlId.version=" + sqrlId.getVersion());
+        if (!SQRL_VERSION.equals(sqrlCredentials.getVersion()))
+            throw new IllegalArgumentException("sqrlCredentials.version=" + sqrlCredentials.getVersion());
 
         // TODO ByteBuffer.array() offset not checked
         return checkvalid(sqrlCredentials.sqrlsig.array(),
